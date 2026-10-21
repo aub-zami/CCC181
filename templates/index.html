@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Home · UniQueue{% endblock %}
+
+{% block content %}
+  <h1 class="mb-3">Welcome to UniQueue!</h1>
+  <p class="lead">P.E.Uniform Queueing System for MSU-IIT Students</p>
+
+  <h2 class="h4 mt-4">Current Queue</h2>
+  <div class="list-group">
+    {% for ticket in tickets %}
+      <a href="{{ url_for('ticket', ticket_id=ticket.number) }}" class="list-group-item list-group-item-action">
+        <div class="d-flex w-100 justify-content-between">
+          <h5 class="mb-1">Ticket #{{ ticket.number }} - {{ ticket.name }}</h5>
+          <small class="text-muted">{{ ticket.status|capitalize }}</small>
+        </div>
+        <p class="mb-1"><strong>Student ID:</strong> {{ ticket.student_id }} | <strong>Batch:</strong> {{ ticket.batch }}</p>
+      </a>
+    {% endfor %}
+  </div>
+{% endblock %}
