@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block title %}Staff Dashboard · UniQueue{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-2 mb-3">
+  <div>
+    <h1 class="h3 mb-0">Staff Dashboard</h1>
+    <p class="text-muted small mb-0">Manage PE Uniform sizing, payment, and pickup queues.</p>
+  </div>
+  
+  {% set first_waiting = queue | selectattr("status", "equalto", "waiting") | first %}
+  {% if first_waiting %}
+    <form method="post" action="{{ url_for('staff_action', ticket_id=first_waiting.number, action='call') }}">
+      <button type="submit" class="btn btn-primary fw-bold shadow-sm text-nowrap px-4 py-2">
+        📢 Call Next (#{{ "%02d"|format(first_waiting.number) }})
+      </button>
+    </form>
+  {% else %}
+    <button class="btn btn-secondary text-nowrap px-4 py-2" disabled>No Waiting Tickets</button>
+  {% endif %}
+</div>
+
+<div class="d-flex flex-wrap gap-2 mb-3">
+  <span class="badge text-bg-light border px-3 py-2 fs-6">
+    Waiting in queue: <strong>{{ total_waiting }}</strong>
+  </span>
+  {% for s in services %}
+    <span class="badge text-bg-secondary bg-opacity-10 text-dark border px-3 py-2 fs-6">
+      {{ s.name }}: <strong>{{ counts[s.id] }} waiting</strong>
+    </span>
+  {% endfor %}
+</div>
+
+<!-- Service Filter -->
+<div class="card mb-4 bg-light">
+  <div class="card-body py-2">
+    <form method="get" action="{{ url_for('staff_dashboard') }}" class="row g-2 align-items-center">
+      <div class="col-auto">
+        <label for="service_id" class="col-form-label fw-semibold small">Filter Service:</label>
+      </div>
+      <div class="col-auto">
+        <select name="service_id" id="service_id" class="form-select form-select-sm" onchange="this.form.submit()">
+          <option value="">All Services</option>
+          {% for s in services %}
+            <option value="{{ s.id }}" {% if selected == s.id %}selected{% endif %}>
+              {{ s.name }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+      {% if selected %}
+        <div class="col-auto">
+          <a href="{{ url_for('staff_dashboard') }}" class="btn btn-sm btn-link text-decoration-none">Clear filter</a>
+        </div>
+      {% endif %}
+    </form>
+  </div>
+</div>
+
+<!-- Queue Table -->
+{% if queue %}
+  <div class="table-responsive card shadow-sm">
+    <table class="table table-hover align-middle mb-0">
+      <caption class="ps-3 text-muted">Students waiting or called</caption>
+      <thead class="table-light">
+        <tr>
+          <th scope="col">Ticket</th>
+          <th scope="col">Student Details</th>
+          <th scope="col">Service</th>
+          <th scope="col">Status</th>
+          <th scope="col" class="text-center">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for ticket in queue %}
+          <tr>
+            <td class="fw-bold fs-5 text-primary">#{{ "%02d"|format(ticket.number) }}</td>
+            <td>
+              <div class="fw-semibold">{{ ticket.name }}</div>
+              <small class="text-muted">ID: {{ ticket.student_id }}</small>
+            </td>
+            <td>
+              <span class="badge bg-secondary bg-opacity-10 text-dark border">
+                {{ names[ticket.service_id] }}
+              </span>
+            </td>
+            <td>
+              {% if ticket.status == 'waiting' %}
+                <span class="badge text-bg-warning text-uppercase">WAITING</span>
+              {% elif ticket.status == 'called' %}
+                <span class="badge text-bg-success text-uppercase">CALLED</span>
+              {% endif %}
+            </td>
+            <td class="text-center">
+              <div class="d-inline-flex gap-1 justify-content-center">
+                {% if ticket.status == 'waiting' %}
+                  <form method="post" action="{{ url_for('staff_action', ticket_id=ticket.number, action='call') }}">
+                    <button type="submit" class="btn btn-sm btn-outline-primary" aria-label="Call ticket {{ ticket.number }}">
+                      Call
+                    </button>
+                  </form>
+                {% endif %}
+
+                <form method="post" action="{{ url_for('staff_action', ticket_id=ticket.number, action='serve') }}">
+                  <button type="submit" class="btn btn-sm btn-success" aria-label="Mark ticket {{ ticket.number }} as served">
+                    Serve
+                  </button>
+                </form>
+
+                <form method="post" action="{{ url_for('staff_action', ticket_id=ticket.number, action='no-show') }}">
+                  <button type="submit" class="btn btn-sm btn-outline-danger" aria-label="Mark ticket {{ ticket.number }} as no-show">
+                    No-Show
+                  </button>
+                </form>
+              </div>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}
+  <div class="card text-center p-5 bg-light">
+    <h3 class="h5 text-muted mb-2">No tickets in line</h3>
+    <p class="small text-secondary mb-0">All tickets have been served or marked as no-show.</p>
+  </div>
+{% endif %}
+{% endblock %}
