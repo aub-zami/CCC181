@@ -7,7 +7,7 @@
   <div class="col-12 col-md-8 col-lg-6 text-center">
     
     <!-- Wireframe Top Heading -->
-    <h1 class="h4 fw-normal text-secondary mb-1">You joined the queue.</h1>
+    <h1 class="h4 fw-normal text-dark mb-1">You joined the queue.</h1>
     <p class="fs-5 fw-bold mb-3">Your ticket is</p>
 
     <!-- Wireframe Ticket Banner with Larger Font -->
@@ -62,11 +62,11 @@
 
     <!-- Red Box Leave Button -->
     <form method="post" action="{{ url_for('leave_queue', ticket_id=ticket.number) }}" onsubmit="return confirm('Are you sure you want to leave the queue?');">
-      <button type="submit" class="btn btn-outline-danger px-4 py-2 fw-semibold">Leave the queue</button>
+      <button type="submit" class="btn btn-danger px-4 py-2 fw-semibold">Leave the queue</button>
     </form>
 
     <div class="mt-4">
-      <a href="{{ url_for('index') }}" class="btn btn-link text-decoration-none">← Back to Home</a>
+      <a href="{{ url_for('index') }}" class="btn btn-link text-primary-emphasis text-decoration-none">← Back to Home</a>
     </div>
 
   </div>
