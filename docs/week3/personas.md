@@ -16,7 +16,7 @@
 
 ### Scenario
 
-Juane’s assigned uniform claiming schedule is tied to his PE class time slot (Batch A: Mon/Thu 8:00 AM - 10:00 AM). When he arrives at the gym, he finds a large, crowded line made up of students from various PE sections, along with others waiting outside their designated schedule. Wanting to avoid standing under the direct heat of the sun in the unorganized queue, he opens UniQueue on his phone while walking toward the venue, selects "Uniform Claiming / Pickup", and receives Ticket #12. Seeing "4 people ahead" on his screen, he waits under the shaded bleachers nearby until his turn is called.
+Juane’s assigned uniform claiming schedule is tied to his PE class time slot. When he arrives at the gym, he finds a large, crowded line made up of students from various PE sections, along with others waiting outside their designated schedule. Wanting to avoid standing under the direct heat of the sun in the unorganized queue, he opens UniQueue on his phone while walking toward the venue, selects "Uniform Claiming / Pickup", and receives Ticket #12. Seeing "4 people ahead" on his screen, he waits under the shaded bleachers nearby until his turn is called.
 
 ### Top tasks in the app
 
@@ -50,7 +50,7 @@ Juane’s assigned uniform claiming schedule is tied to his PE class time slot (
 
 ### Scenario
 
-Ate Marie sits at the uniform pickup counter during peak morning hours. She opens the UniQueue Staff Dashboard on her laptop, filters the list to "Uniform Claiming / Pickup", and clicks "Call next". Ticket #12 updates to "Called", alerting Juane to approach the counter. Once she hands him the uniform, she clicks "Serve" to move to the next student.
+Maria Claria sits at the uniform pickup counter during peak morning hours. She opens the UniQueue Staff Dashboard on her laptop, filters the list to "Uniform Claiming / Pickup", and clicks "Call next". Ticket #12 updates to "Called", alerting Juane to approach the counter. Once she hands him the uniform, she clicks "Serve" to move to the next student.
 
 ### Top tasks in the app
 

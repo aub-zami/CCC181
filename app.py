@@ -14,13 +14,13 @@ SERVICES = [
 ]
 
 # Sample data for the demo. A real app would load this from a database later.
+# status is one of: waiting, called, served, no-show
 TICKETS = [
     {
         "number": 1,
         "name": "Juane dela Craige",
         "email": "juan.delacraige@g.msuiit.edu.ph",
         "student_id": "2026-0001",
-        "batch": "Batch A (8:00 AM - 10:00 AM)",
         "service_id": 1,
         "status": "waiting",
     },
@@ -29,7 +29,6 @@ TICKETS = [
         "name": "Bam Bart",
         "email": "bam.bart@g.msuiit.edu.ph",
         "student_id": "2026-0002",
-        "batch": "Batch A (8:00 AM - 10:00 AM)",
         "service_id": 2,
         "status": "waiting",
     },
