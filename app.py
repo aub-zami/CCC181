@@ -4,9 +4,10 @@ Run it with:
     flask --app app run --debug
 then open http://127.0.0.1:5000
 """
-from flask import Flask, render_template
+from flask import Flask, abort, flash, redirect, render_template, request, url_for
 
 app = Flask(__name__)
+app.secret_key = "dev-only-change-me" 
 
 SERVICES = [
     {"id": 1, "name": "Sizing & Payment"},
@@ -39,7 +40,7 @@ TICKETS = [
 def index():
     # render_template looks inside the templates/ folder and passes
     # keyword arguments to the template as variables.
-    return render_template("index.html", name="Ana", tickets=TICKETS)
+    return render_template("index.html")
 
 
 @app.route("/queue/<int:ticket_id>")
@@ -53,6 +54,13 @@ def hello():
     # The plain-string version from the Routes slide.
     return "Hello, CCC181!"
 
+@app.route("/join")
+def join_form():
+    return render_template("join.html")
+
+@app.route("/staff")
+def staff_dashboard():
+    return "Staff dashboard coming soon"
 
 if __name__ == "__main__":
     # Lets you also start the app with: python app.py
