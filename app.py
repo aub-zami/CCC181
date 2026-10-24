@@ -133,6 +133,16 @@ def staff_action(ticket_id, action):
     flash(f"Ticket #{ticket_id} marked {new_status}.", "info")
     return redirect(url_for("staff_dashboard"))
 
+@app.get("/queue/<int:ticket_id>/status.json")
+def ticket_status(ticket_id):
+    t = next((t for t in TICKETS if t["number"] == ticket_id), None)
+    if t is None:
+        abort(404)
+    ahead = sum(1 for x in TICKETS
+                if x["service_id"] == t["service_id"]
+                and x["status"] == "waiting" and x["number"] < t["number"])
+    return {"status": t["status"], "ahead": ahead}
+
 if __name__ == "__main__":
     # Lets you also start the app with: python app.py
     app.run(debug=True)

@@ -27,26 +27,30 @@
         <h2 class="display-1 fw-bold text-dark my-1">{{ position }}</h2>
         
         <!-- Bolder & Larger "You're next!" / Position Sentence -->
-        <p class="fs-4 fw-bold text-dark my-2">
-          {% if ahead == 0 %}
-            You're next!
-          {% elif ahead == 1 %}
-            1 person ahead of you
+        <p id="ticket-ahead" class="fs-4 fw-bold text-dark my-2">
+          {% if ticket.status != 'waiting' %}
+            Your turn is ready or completed!
           {% else %}
-            {{ ahead }} people ahead of you
+            {% if ahead == 0 %}
+              You're next!
+            {% elif ahead == 1 %}
+              1 person ahead of you
+            {% else %}
+              {{ ahead }} people ahead of you
+            {% endif %}
           {% endif %}
         </p>
 
-        <!-- Clean Badge without "Status: " -->
+        <!-- Autorefresh badge -->
         <div class="mt-3">
           {% if ticket.status == 'waiting' %}
-            <span class="badge text-bg-warning text-uppercase fs-6 px-3 py-2">WAITING</span>
+            <span id="ticket-status" class="badge text-bg-warning text-uppercase fs-6 px-3 py-2">WAITING</span>
           {% elif ticket.status == 'called' %}
-            <span class="badge text-bg-success text-uppercase fs-6 px-3 py-2">CALLED</span>
+            <span id="ticket-status" class="badge text-bg-success text-uppercase fs-6 px-3 py-2">CALLED</span>
           {% elif ticket.status == 'served' %}
-            <span class="badge text-bg-secondary text-uppercase fs-6 px-3 py-2">SERVED</span>
+            <span id="ticket-status" class="badge text-bg-secondary text-uppercase fs-6 px-3 py-2">SERVED</span>
           {% else %}
-            <span class="badge text-bg-danger text-uppercase fs-6 px-3 py-2">NO-SHOW</span>
+            <span id="ticket-status" class="badge text-bg-danger text-uppercase fs-6 px-3 py-2">NO-SHOW</span>
           {% endif %}
         </div>
 
@@ -67,4 +71,47 @@
 
   </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const statusUrl = "{{ url_for('ticket_status', ticket_id=ticket.number) }}";
+  async function refreshStatus() {
+    try {
+      const res = await fetch(statusUrl);
+      if (!res.ok) return;
+      const data = await res.json();
+      // Update the badge text and the "people ahead" sentence here,
+      const statusBadge = document.getElementById("ticket-status");
+      if (statusBadge) {
+        statusBadge.textContent = data.status.toUpperCase();
+        
+        if (data.status === "waiting") {
+          statusBadge.className = "badge text-bg-warning text-uppercase";
+        } else if (data.status === "called") {
+          statusBadge.className = "badge text-bg-success text-uppercase";
+        } else if (data.status === "served") {
+          statusBadge.className = "badge text-bg-secondary text-uppercase";
+        } else if (data.status === "no-show") {
+          statusBadge.className = "badge text-bg-danger text-uppercase";
+        }
+      }
+      // using the ids you gave them in Part 6.
+      const aheadText = document.getElementById("ticket-ahead");
+      if (aheadText) { 
+        if (data.status !== "waiting") {
+          aheadText.textContent = "Your turn is ready or completed!"; 
+        } else if (data.ahead === 0) {
+          aheadText.textContent = "You're next!";
+        } else {
+          aheadText.textContent = `${data.ahead} ${data.ahead === 1 ? 'person' : 'people'} ahead of you`;
+        }
+      }
+
+    } catch (err) {
+      console.warn("Could not refresh status", err);
+    }
+  }
+  setInterval(refreshStatus, 10000); 
+</script>
 {% endblock %}
