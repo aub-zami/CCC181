@@ -54,9 +54,38 @@ def hello():
     # The plain-string version from the Routes slide.
     return "Hello, CCC181!"
 
-@app.route("/join")
+@app.get("/join")
 def join_form():
-    return render_template("join.html")
+    return render_template("join.html", services=SERVICES, form={})
+
+
+@app.post("/join")
+def join():
+    form = request.form
+    name = form.get("name", "").strip()
+    student_id = form.get("student_id", "").strip() 
+    email = form.get("email", "").strip().lower()
+    service_id = form.get("service_id", type=int)
+
+    errors = {}
+    if not name:
+        errors["name"] = "Enter your name."
+    if "@" not in email:
+        errors["email"] = "Enter a valid email address."
+    if not student_id:
+        errors["student_id"] = "Enter your Student ID."
+    if service_id not in [s["id"] for s in SERVICES]:
+        errors["service_id"] = "Choose a service."
+    
+    if errors:
+        flash("Please fix the highlighted fields.", "danger")
+        return render_template("join.html", services=SERVICES, form=form, errors=errors), 400
+
+    number = TICKETS[-1]["number"] + 1 if TICKETS else 1
+    TICKETS.append({"number": number, "name": name, "email": email,
+                    "service_id": service_id, "status": "waiting"})
+    flash(f"You joined the queue. Your ticket is #{number}.", "success")
+    return redirect(url_for("ticket", ticket_id=number))                
 
 @app.route("/staff")
 def staff_dashboard():
