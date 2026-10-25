@@ -16,20 +16,26 @@
       <span class="text-muted fs-5 mx-2">|</span>
       <span class="fs-5 fw-semibold">{{ service.name }}</span>
     </div>
-
+    <p class="text-muted small mt-2">
+      <i class="bi bi-info-circle"></i> Ticket numbers are issued across all services; position reflects your place for this specific service.
+    </p>
     <!-- Main Card -->
     <div class="card shadow-sm p-4 mb-3 border border-secondary border-opacity-25">
       <div id="live-status" aria-live="polite">
         
-        <p class="fw-bold text-dark fs-5 mb-2">Your place in line</p>
+        <p class="fw-bold text-dark fs-5 mb-2">Your position in line</p>
         
         <!-- Large Position Number -->
         <h2 class="display-1 fw-bold text-dark my-1">{{ position }}</h2>
         
         <!-- Bolder & Larger "You're next!" / Position Sentence -->
         <p id="ticket-ahead" class="fs-4 fw-bold text-dark my-2">
-          {% if ticket.status != 'waiting' %}
-            Your turn is ready or completed!
+          {% if ticket.status == 'called' %}
+            Please proceed to the counter!
+          {% elif ticket.status == 'served' %}
+            Service completed!
+          {% elif ticket.status == 'no-show' %}
+            You missed your turn. 
           {% else %}
             {% if ahead == 0 %}
               You're next!
@@ -56,6 +62,7 @@
 
       </div>
     </div>
+
 
     <!-- Status Subtext -->
     <p class="text-muted small mb-4">Updated just now. Keep this page open to track your spot in line.</p>
@@ -87,26 +94,33 @@
         statusBadge.textContent = data.status.toUpperCase();
         
         if (data.status === "waiting") {
-          statusBadge.className = "badge text-bg-warning text-uppercase";
+          statusBadge.className = "badge text-bg-warning text-uppercase fs-6 px-3 py-2";
         } else if (data.status === "called") {
-          statusBadge.className = "badge text-bg-success text-uppercase";
+          statusBadge.className = "badge text-bg-success text-uppercase fs-6 px-3 py-2";
         } else if (data.status === "served") {
-          statusBadge.className = "badge text-bg-secondary text-uppercase";
+          statusBadge.className = "badge text-bg-secondary text-uppercase fs-6 px-3 py-2 ";
         } else if (data.status === "no-show") {
-          statusBadge.className = "badge text-bg-danger text-uppercase";
+          statusBadge.className = "badge text-bg-danger text-uppercase fs-6 px-3 py-2";
         }
       }
       // using the ids you gave them in Part 6.
-      const aheadText = document.getElementById("ticket-ahead");
-      if (aheadText) { 
-        if (data.status !== "waiting") {
-          aheadText.textContent = "Your turn is ready or completed!"; 
-        } else if (data.ahead === 0) {
-          aheadText.textContent = "You're next!";
+      const aheadElement = document.getElementById('ticket-ahead');
+
+        if (data.status === 'called') {
+          aheadElement.textContent = "Please proceed to the counter!";
+        } else if (data.status === 'served') {
+          aheadElement.textContent = "Service completed!";
+        } else if (data.status === 'no-show') {
+          aheadElement.textContent = "You missed your turn.";
         } else {
-          aheadText.textContent = `${data.ahead} ${data.ahead === 1 ? 'person' : 'people'} ahead of you`;
+          if (data.ahead === 0) {
+            aheadElement.textContent = "You're next!";
+          } else if (data.ahead === 1) {
+            aheadElement.textContent = "1 person ahead of you";
+          } else {
+            aheadElement.textContent = `${data.ahead} people ahead of you`;
+          }
         }
-      }
 
     } catch (err) {
       console.warn("Could not refresh status", err);

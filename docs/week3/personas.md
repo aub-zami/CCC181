@@ -41,7 +41,7 @@ Juane’s assigned uniform claiming schedule is tied to his PE class time slot. 
 | Field | Details |
 | --- | --- |
 | **Photo or sketch** | 👩🏻‍💻 |
-| **Age, role and background** | 37, Administrative Staff at MSU-IIT PE Dept; handles uniform sizing, payments, and releases |
+| **Age, role and background** | 21, Staff at MSU-IIT Langkit; handles uniform sizing, payments, and releases |
 | **Goals** | Keep the line moving smoothly; easily call next student; filter queue by service type (Payment vs. Pickup) |
 | **Frustrations** | Students asking "Am I next?" every minute; crowding around the counter; students missing their call |
 | **Devices and context** | Office desktop laptop / counter tablet; manages queue while simultaneously checking uniform inventory |
@@ -50,7 +50,7 @@ Juane’s assigned uniform claiming schedule is tied to his PE class time slot. 
 
 ### Scenario
 
-Maria Claria sits at the uniform pickup counter during peak morning hours. She opens the UniQueue Staff Dashboard on her laptop, filters the list to "Uniform Claiming / Pickup", and clicks "Call next". Ticket #12 updates to "Called", alerting Juane to approach the counter. Once she hands him the uniform, she clicks "Serve" to move to the next student.
+Maria Claria manages high-volume PE uniform transactions at the university store, accommodating up to 1,000 students per batch. During sizing sessions, only 5 students can try on sample shirts simultaneously, while hundreds wait outside due to limited sheltered space. Using UniQueue on her counter laptop, Maria filters the dashboard by service (Sizing/Payment vs. Batch Pickup) and calls students in organized increments so they can wait comfortably in shaded bleachers nearby instead of overcrowding the store entrance. *(interview)*
 
 ### Top tasks in the app
 
@@ -63,5 +63,5 @@ Maria Claria sits at the uniform pickup counter during peak morning hours. She o
 ### What this means for my interface
 
 1. Because Maria Claria handles high-volume desk traffic, the "Call Next" and "Serve" buttons must be prominent and easy to click with one tap.
-2. Because Sizing/Payment and  Claiming occur as separate steps days apart (observation), a service filter dropdown/tabs must be placed right at the top of the dashboard.
+2. Because Sizing/Payment and  Claiming occur as separate steps months apart *(interview)*, a service filter dropdown/tabs must be placed right at the top of the dashboard.
 3. Because multiple identical buttons exist in a table, every action button must have proper `aria-label` attributes for accessibility.
