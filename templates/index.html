@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}Home · UniQueue{% endblock %}
+
+{% block content %}
+<div class="py-5 text-center">
+  <h1 class="display-4 fw-bold">Welcome to UniQueue!</h1>
+  <p class="lead text-secondary">P.E. Uniform Queueing System for MSU-IIT Students</p>
+  <div class="mt-4">
+    <a href="{{ url_for('join_form') }}" class="btn btn-primary btn-lg">Join the queue</a>
+  </div>
+</div>
+{% endblock %}

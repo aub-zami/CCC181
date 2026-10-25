@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block title %}Ticket #{{ ticket.number }} · UniQueue{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-12 col-md-8 col-lg-6 text-center">
+    
+    <!-- Wireframe Top Heading -->
+    <h1 class="h4 fw-normal text-dark mb-1">You joined the queue.</h1>
+    <p class="fs-5 fw-bold mb-3">Your ticket is</p>
+
+    <!-- Wireframe Ticket Banner with Larger Font -->
+    <div class="bg-warning bg-opacity-10 text-dark py-2 px-3 rounded border border-warning mb-4">
+      <span class="fs-5 fw-bold">Ticket #{{ "%02d"|format(ticket.number) }}</span>
+      <span class="text-muted fs-5 mx-2">|</span>
+      <span class="fs-5 fw-semibold">{{ service.name }}</span>
+    </div>
+    <p class="text-muted small mt-2">
+      <i class="bi bi-info-circle"></i> Ticket numbers are issued across all services; position reflects your place for this specific service.
+    </p>
+    <!-- Main Card -->
+    <div class="card shadow-sm p-4 mb-3 border border-secondary border-opacity-25">
+      <div id="live-status" aria-live="polite">
+        
+        <p class="fw-bold text-dark fs-5 mb-2">Your position in line</p>
+        
+        <!-- Large Position Number -->
+        <h2 class="display-1 fw-bold text-dark my-1">{{ position }}</h2>
+        
+        <!-- Bolder & Larger "You're next!" / Position Sentence -->
+        <p id="ticket-ahead" class="fs-4 fw-bold text-dark my-2">
+          {% if ticket.status == 'called' %}
+            Please proceed to the counter!
+          {% elif ticket.status == 'served' %}
+            Service completed!
+          {% elif ticket.status == 'no-show' %}
+            You missed your turn. 
+          {% else %}
+            {% if ahead == 0 %}
+              You're next!
+            {% elif ahead == 1 %}
+              1 person ahead of you
+            {% else %}
+              {{ ahead }} people ahead of you
+            {% endif %}
+          {% endif %}
+        </p>
+
+        <!-- Autorefresh badge -->
+        <div class="mt-3">
+          {% if ticket.status == 'waiting' %}
+            <span id="ticket-status" class="badge text-bg-warning text-uppercase fs-6 px-3 py-2">WAITING</span>
+          {% elif ticket.status == 'called' %}
+            <span id="ticket-status" class="badge text-bg-success text-uppercase fs-6 px-3 py-2">CALLED</span>
+          {% elif ticket.status == 'served' %}
+            <span id="ticket-status" class="badge text-bg-secondary text-uppercase fs-6 px-3 py-2">SERVED</span>
+          {% else %}
+            <span id="ticket-status" class="badge text-bg-danger text-uppercase fs-6 px-3 py-2">NO-SHOW</span>
+          {% endif %}
+        </div>
+
+      </div>
+    </div>
+
+
+    <!-- Status Subtext -->
+    <p class="text-muted small mb-4">Updated just now. Keep this page open to track your spot in line.</p>
+
+    <!-- Red Box Leave Button -->
+    <form method="post" action="{{ url_for('leave_queue', ticket_id=ticket.number) }}" onsubmit="return confirm('Are you sure you want to leave the queue?');">
+      <button type="submit" class="btn btn-danger px-4 py-2 fw-semibold">Leave the queue</button>
+    </form>
+
+    <div class="mt-4">
+      <a href="{{ url_for('index') }}" class="btn btn-link text-primary-emphasis text-decoration-none">← Back to Home</a>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const statusUrl = "{{ url_for('ticket_status', ticket_id=ticket.number) }}";
+  async function refreshStatus() {
+    try {
+      const res = await fetch(statusUrl);
+      if (!res.ok) return;
+      const data = await res.json();
+      // Update the badge text and the "people ahead" sentence here,
+      const statusBadge = document.getElementById("ticket-status");
+      if (statusBadge) {
+        statusBadge.textContent = data.status.toUpperCase();
+        
+        if (data.status === "waiting") {
+          statusBadge.className = "badge text-bg-warning text-uppercase fs-6 px-3 py-2";
+        } else if (data.status === "called") {
+          statusBadge.className = "badge text-bg-success text-uppercase fs-6 px-3 py-2";
+        } else if (data.status === "served") {
+          statusBadge.className = "badge text-bg-secondary text-uppercase fs-6 px-3 py-2 ";
+        } else if (data.status === "no-show") {
+          statusBadge.className = "badge text-bg-danger text-uppercase fs-6 px-3 py-2";
+        }
+      }
+      // using the ids you gave them in Part 6.
+      const aheadElement = document.getElementById('ticket-ahead');
+
+        if (data.status === 'called') {
+          aheadElement.textContent = "Please proceed to the counter!";
+        } else if (data.status === 'served') {
+          aheadElement.textContent = "Service completed!";
+        } else if (data.status === 'no-show') {
+          aheadElement.textContent = "You missed your turn.";
+        } else {
+          if (data.ahead === 0) {
+            aheadElement.textContent = "You're next!";
+          } else if (data.ahead === 1) {
+            aheadElement.textContent = "1 person ahead of you";
+          } else {
+            aheadElement.textContent = `${data.ahead} people ahead of you`;
+          }
+        }
+
+    } catch (err) {
+      console.warn("Could not refresh status", err);
+    }
+  }
+  setInterval(refreshStatus, 10000); 
+</script>
+{% endblock %}
