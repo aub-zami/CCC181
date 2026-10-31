@@ -1,7 +1,9 @@
 # UniQueue
-A queue management application designed for students (mostly freshmen) at MSU-IIT to manage P.E. uniform sizing, payment, and distribution efficiently.
+A queue management application designed for students (mostly freshmen) at MSU-IIT to manage P.E. uniform sizing, payment, and distribution efficiently. See [UniQueue Requirements](docs/requirements.md).
 
 **Note for Staff Dashboard:** Staff login will be implemented in a later week. For now, the dashboard (`/staff`) is open and accessible without authentication.
+
+
 
 ## How to run UniQueue
  ### 1. Create and activate a virtual environment:
