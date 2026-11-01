@@ -24,10 +24,6 @@ app.config["SQLALCHEMY_ECHO"] = os.environ.get("SQLALCHEMY_ECHO") == "1"
 
 db.init_app(app)
 migrate = Migrate(app, db)
-
-from flask import Flask, abort, flash, redirect, render_template, request, url_for
-
-app = Flask(__name__)
 app.secret_key = "dev-only-change-me" 
 
 SERVICES = [
@@ -167,3 +163,17 @@ def ticket_status(ticket_id):
 if __name__ == "__main__":
     # Lets you also start the app with: python app.py
     app.run(debug=True)
+
+@app.cli.command("seed")
+def seed():
+    """Add the starting services if they are not there yet."""
+    starting = [
+        ("PE Uniform Sizing & Payment", 10),
+        ("PE Uniform Claiming / Pickup", 5),
+    ]
+    for name, minutes in starting:
+        exists = db.session.scalar(db.select(Service).filter_by(name=name))
+        if exists is None:
+            db.session.add(Service(name=name, avg_minutes=minutes))
+    db.session.commit()
+    print("Services are ready.")
