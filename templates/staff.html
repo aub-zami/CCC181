@@ -11,9 +11,9 @@
   
   {% set first_waiting = queue | selectattr("status", "equalto", "waiting") | first %}
   {% if first_waiting %}
-    <form method="post" action="{{ url_for('staff_action', ticket_id=first_waiting.number, action='call') }}">
+    <form method="post" action="{{ url_for('staff_action', ticket_id=first_waiting.id, action='call') }}">
       <button type="submit" class="btn btn-primary fw-bold shadow-sm text-nowrap px-4 py-2">
-        📢 Call Next (#{{ "%02d"|format(first_waiting.number) }})
+        📢 Call Next (#{{ "%02d"|format(first_waiting.id) }})
       </button>
     </form>
   {% else %}
@@ -23,11 +23,11 @@
 
 <div class="d-flex flex-wrap gap-2 mb-3">
   <span class="badge text-bg-light border px-3 py-2 fs-6">
-    Waiting in queue: <strong>{{ total_waiting }}</strong>
+    Waiting in queue: <strong>{{ queue | length }}</strong>
   </span>
   {% for s in services %}
     <span class="badge text-bg-secondary bg-opacity-10 text-dark border px-3 py-2 fs-6">
-      {{ s.name }}: <strong>{{ counts[s.id] }} waiting</strong>
+      {{ s.name }}: <strong>{{ s.tickets | selectattr("status", "equalto", "waiting") | list | length }} waiting</strong> 
     </span>
   {% endfor %}
 </div>
@@ -68,6 +68,7 @@
           <th scope="col">Ticket</th>
           <th scope="col">Student Details</th>
           <th scope="col">Service</th>
+          <th scope="col">Joined</th>
           <th scope="col">Status</th>
           <th scope="col" class="text-center">Actions</th>
         </tr>
@@ -77,14 +78,17 @@
           <tr>
             <td class="fw-bold fs-5 text-primary">#{{ "%02d"|format(ticket.id) }}</td>
             <td>
-              <div class="fw-semibold">{{ ticket.name }}</div>
-              <small class="text-muted">ID: {{ ticket.student_id }}</small>
+              <div class="fw-semibold">{{ ticket.user.name }}</div>
+              <small class="text-muted">ID: {{ ticket.user.student_id }}</small>
             </td>
             <td>
               <span class="badge bg-secondary bg-opacity-10 text-dark border">
-                {{ names[ticket.service_id] }}
+                {{ticket.service.name }} 
               </span>
             </td>
+            <td>
+              <small class="text-muted">{{ ticket.created_at|local }}</small>
+            </td> 
             <td>
               {% if ticket.status == 'waiting' %}
                 <span class="badge text-bg-warning text-uppercase">WAITING</span>
