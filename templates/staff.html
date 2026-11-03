@@ -75,7 +75,7 @@
       <tbody>
         {% for ticket in queue %}
           <tr>
-            <td class="fw-bold fs-5 text-primary">#{{ "%02d"|format(ticket.number) }}</td>
+            <td class="fw-bold fs-5 text-primary">#{{ "%02d"|format(ticket.id) }}</td>
             <td>
               <div class="fw-semibold">{{ ticket.name }}</div>
               <small class="text-muted">ID: {{ ticket.student_id }}</small>
@@ -95,21 +95,21 @@
             <td class="text-center">
               <div class="d-inline-flex gap-1 justify-content-center">
                 {% if ticket.status == 'waiting' %}
-                  <form method="post" action="{{ url_for('staff_action', ticket_id=ticket.number, action='call') }}">
-                    <button type="submit" class="btn btn-sm btn-outline-primary" aria-label="Call ticket {{ ticket.number }}">
+                  <form method="post" action="{{ url_for('staff_action', ticket_id=ticket.id, action='call') }}">
+                    <button type="submit" class="btn btn-sm btn-outline-primary" aria-label="Call ticket {{ ticket.id }}">
                       Call
                     </button>
                   </form>
                 {% endif %}
 
-                <form method="post" action="{{ url_for('staff_action', ticket_id=ticket.number, action='serve') }}">
-                  <button type="submit" class="btn btn-sm btn-success" aria-label="Mark ticket {{ ticket.number }} as served">
+                <form method="post" action="{{ url_for('staff_action', ticket_id=ticket.id, action='serve') }}">
+                  <button type="submit" class="btn btn-sm btn-success" aria-label="Mark ticket {{ ticket.id }} as served">
                     Serve
                   </button>
                 </form>
 
-                <form method="post" action="{{ url_for('staff_action', ticket_id=ticket.number, action='no-show') }}">
-                  <button type="submit" class="btn btn-sm btn-outline-danger" aria-label="Mark ticket {{ ticket.number }} as no-show">
+                <form method="post" action="{{ url_for('staff_action', ticket_id=ticket.id, action='no-show') }}">
+                  <button type="submit" class="btn btn-sm btn-outline-danger" aria-label="Mark ticket {{ ticket.id }} as no-show">
                     No-Show
                   </button>
                 </form>

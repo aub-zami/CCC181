@@ -26,31 +26,7 @@ db.init_app(app)
 migrate = Migrate(app, db)
 app.secret_key = "dev-only-change-me" 
 
-SERVICES = [
-    {"id": 1, "name": "Sizing & Payment"},
-    {"id": 2, "name": "Uniform Claiming / Pickup"},
-]
-
-# Sample data for the demo. A real app would load this from a database later.
-# status is one of: waiting, called, served, no-show
-TICKETS = [
-    {
-        "number": 1,
-        "name": "Juane dela Craige",
-        "email": "juan.delacraige@g.msuiit.edu.ph",
-        "student_id": "2026-0001",
-        "service_id": 1,
-        "status": "waiting",
-    },
-    {
-        "number": 2,
-        "name": "Bam Bart",
-        "email": "bam.bart@g.msuiit.edu.ph",
-        "student_id": "2026-0002",
-        "service_id": 2,
-        "status": "waiting",
-    },
-]
+#gidelete ang service and ticket list 
 
 
 @app.route("/")
@@ -59,6 +35,60 @@ def index():
     # keyword arguments to the template as variables.
     return render_template("index.html")
 
+def all_services():
+    return db.session.scalars(db.select(Service).order_by(Service.name)).all()
+
+
+@app.get("/join")
+def join_form():
+    return render_template("join.html", services=all_services(), form={})
+
+
+@app.post("/join")
+def join():
+    form = request.form
+    name = form.get("name", "").strip()
+    email = form.get("email", "").strip().lower()
+    student_id = form.get("student_id", "").strip()
+    service_id = form.get("service_id", type=int)
+    service = db.session.get(Service, service_id) if service_id else None
+
+    errors = {}
+    if not name or len(name) > 80:
+        errors["name"] = "Enter your name (up to 80 characters)."
+    if not student_id or len(student_id) > 20:
+        errors["student_id"] = "Enter your Student ID."
+    if "@" not in email or len(email) > 120:
+        errors["email"] = "Enter a valid email address."
+    if service is None:
+        errors["service_id"] = "Choose a service."
+
+    if errors:
+        flash("Please fix the highlighted fields.", "danger")
+        return render_template("join.html", services=all_services(),
+                               form=form, errors=errors), 400
+
+    user = db.session.scalar(db.select(User).filter_by(email=email))
+    if user is None:
+        user = User(name=name, email=email, student_id=student_id)
+        db.session.add(user)
+    else:
+        # Update details for returning users 
+        user.name = name
+        user.student_id = student_id
+
+    ticket = Ticket(user=user, service=service)
+    db.session.add(ticket)
+    try:
+        db.session.commit()
+    except IntegrityError:
+        db.session.rollback()
+        flash("Something went wrong saving your ticket. Please try again.", "danger")
+        return render_template("join.html", services=all_services(),
+                               form=form, errors={}), 409
+
+    flash(f"You joined the queue. Your ticket is #{ticket.id}.", "success")
+    return redirect(url_for("ticket", ticket_id=ticket.id))
 
 @app.get("/queue/<int:ticket_id>")
 def ticket(ticket_id):
@@ -88,40 +118,7 @@ def leave_queue(ticket_id):
 @app.route("/hello")
 def hello():
     # The plain-string version from the Routes slide.
-    return "Hello, CCC181!"
-
-@app.get("/join")
-def join_form():
-    return render_template("join.html", services=SERVICES, form={})
-
-
-@app.post("/join")
-def join():
-    form = request.form
-    name = form.get("name", "").strip()
-    student_id = form.get("student_id", "").strip() 
-    email = form.get("email", "").strip().lower()
-    service_id = form.get("service_id", type=int)
-
-    errors = {}
-    if not name:
-        errors["name"] = "Enter your name."
-    if "@" not in email:
-        errors["email"] = "Enter a valid email address."
-    if not student_id:
-        errors["student_id"] = "Enter your Student ID."
-    if service_id not in [s["id"] for s in SERVICES]:
-        errors["service_id"] = "Choose a service."
-    
-    if errors:
-        flash("Please fix the highlighted fields.", "danger")
-        return render_template("join.html", services=SERVICES, form=form, errors=errors), 400
-
-    number = TICKETS[-1]["number"] + 1 if TICKETS else 1
-    TICKETS.append({"number": number, "name": name, "email": email,
-                    "service_id": service_id, "status": "waiting"})
-    flash(f"You joined the queue. Your ticket is #{number}.", "success")
-    return redirect(url_for("ticket", ticket_id=number))                
+    return "Hello, CCC181!"              
 
 @app.get("/staff")
 def staff_dashboard():
