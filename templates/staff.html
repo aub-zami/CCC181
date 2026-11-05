@@ -13,7 +13,7 @@
   {% if first_waiting %}
   <form method="post" action="{{ url_for('call_next') }}">
     <button type="submit" class="btn btn-primary fw-bold shadow-sm text-nowrap px-4 py-2">
-      📢 Call Next
+      📢 Call Next (#{{ "%02d"|format(first_waiting.id) }})
     </button>
   </form>
   {% else %}
@@ -98,20 +98,11 @@
             </td>
             <td class="text-center">
               <div class="d-inline-flex gap-1 justify-content-center">
-                {% if ticket.status == 'waiting' %}
-                  <form method="post" action="{{ url_for('staff_action', ticket_id=ticket.id, action='call') }}">
-                    <button type="submit" class="btn btn-sm btn-outline-primary" aria-label="Call ticket {{ ticket.id }}">
-                      Call
-                    </button>
-                  </form>
-                {% endif %}
-
                 <form method="post" action="{{ url_for('staff_action', ticket_id=ticket.id, action='serve') }}">
                   <button type="submit" class="btn btn-sm btn-success" aria-label="Mark ticket {{ ticket.id }} as served">
                     Serve
                   </button>
                 </form>
-
                 <form method="post" action="{{ url_for('staff_action', ticket_id=ticket.id, action='no-show') }}">
                   <button type="submit" class="btn btn-sm btn-outline-danger" aria-label="Mark ticket {{ ticket.id }} as no-show">
                     No-Show

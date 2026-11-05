@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Manage Services</h2>
+    <a href="{{ url_for('staff_dashboard') }}" class="btn btn-outline-secondary">Back to Dashboard</a>
+  </div>
+
+  <!-- Create Service Form -->
+  <div class="card mb-4 shadow-sm">
+    <div class="card-body">
+      <h5 class="card-title mb-3">Add New Service</h5>
+      <form method="post" action="{{ url_for('service_create') }}" class="row g-3 align-items-center">
+        <div class="col-md-5">
+          <input type="text" name="name" class="form-control" placeholder="Service Name (e.g. Consultation)" required maxlength="60">
+        </div>
+        <div class="col-md-4">
+          <input type="number" name="avg_minutes" class="form-control" placeholder="Avg Minutes" required min="1">
+        </div>
+        <div class="col-md-3">
+          <button type="submit" class="btn btn-primary w-100">Add Service</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Services Table -->
+  <div class="card shadow-sm">
+    <div class="card-body p-0">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>Name</th>
+            <th>Avg Minutes</th>
+            <th>Active?</th>
+            <th>Tickets Count</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for s in services %}
+          <tr>
+            <!-- Edit Form for each Service -->
+            <form method="post" action="{{ url_for('service_edit', service_id=s.id) }}">
+              <td>
+                <input type="text" name="name" value="{{ s.name }}" class="form-control form-control-sm" required maxlength="60">
+              </td>
+              <td>
+                <input type="number" name="avg_minutes" value="{{ s.avg_minutes }}" class="form-control form-control-sm" style="width: 90px;" required min="1">
+              </td>
+              <td>
+                <div class="form-check">
+                  <input type="checkbox" name="active" class="form-check-input" {% if s.active %}checked{% endif %}>
+                </div>
+              </td>
+              <td>
+                <span class="badge bg-secondary">{{ s.tickets|length }}</span>
+              </td>
+              <td>
+                <div class="d-flex gap-2">
+                  <button type="submit" class="btn btn-sm btn-outline-primary">Save</button>
+            </form>
+
+            <!-- Delete Form -->
+            <form method="post" action="{{ url_for('service_delete', service_id=s.id) }}" data-confirm="Delete service '{{ s.name }}'?">
+              <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+            </form>
+                </div>
+              </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

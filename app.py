@@ -180,9 +180,6 @@ def ticket_status(ticket_id):
     t = db.get_or_404(Ticket, ticket_id)
     return {"status": t.status, "ahead": people_ahead(t)}
 
-if __name__ == "__main__":
-    # Lets you also start the app with: python app.py
-    app.run(debug=True)
 
 @app.cli.command("seed")
 def seed():
@@ -218,7 +215,7 @@ def local_time(value):
 #manage services 
 @app.get("/staff/services")
 def services_list():
-    return render_template("services.html", services=all_services)
+    return render_template("services.html", services=all_services())
 
 @app.post("/staff/services")
 def service_create():
@@ -267,3 +264,7 @@ def service_delete(service_id):
     db.session.commit()
     flash(f"Service “{s.name}” deleted.", "warning")
     return redirect(url_for("services_list"))
+
+if __name__ == "__main__":
+    # Lets you also start the app with: python app.py
+    app.run(debug=True)
