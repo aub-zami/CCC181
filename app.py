@@ -147,7 +147,7 @@ def staff_action(ticket_id, action):
         abort(404)
     t = db.get_or_404(Ticket, ticket_id)
     t.status = new_status
-    if new_status == "called":
+    if new_status == "called": 
         t.called_at = func.now()  # the database fills in the time
     db.session.commit()
     flash(f"Ticket #{ticket_id} marked {new_status}.", "info")
